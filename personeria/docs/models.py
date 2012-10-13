@@ -16,17 +16,13 @@ INVESTIGACIONES = (
 
 #fecha_respuesta = fecha_envio + termino_contestacion "solo dias habiles"
 
-TERMINO_DE_COTESTACION = 16
-TERMINO_DE_COTESTACION_OFICIOS = 10
-TERMINO_DE_COTESTACION_PROCESOS_DICOPLINARIOS = 3  
 
 class TerminoDeContestacion(models.Model):
  """maneja el termino de contestacion"""
- nombre = models.CharField( max_length = 3 ,choices = INVESTIGACIONES)
+ nombre = models.CharField( max_length = 3 ,choices = TERMINO_DE_COTESTACION)
  dias   = models.IntegerField()
 
         
-
 class Ciudadanos(models.Model):
  apellido1 = models.CharField( max_length = 20, default = "" )
  apellido2 = models.CharField( max_length = 20, blank = True, default = "" )
@@ -45,9 +41,9 @@ class Ciudadanos(models.Model):
 class Documentos(models.Model):
  accionante  = models.ForeignKey(Ciudadanos)
  accionado   = models.CharField( max_length = 60, default = "" )
- estado      = models.CharField( max_length = 3, choices = ESTADO, default = "proceso" )
+ estado      = models.CharField( max_length = 3, choices = ESTADO, default = "PRO" )
  fecha_envio = models.DateField( blank = False, default = timezone.now() )
- fecha_resp  = models.DateField( editable = False )
+ fecha_resp  = models.DateField( editable = False , null=True)
  #...
  def __unicode__(self):
   return "accionante: "+self.accionante.nombre+" accionado: "+self.accionado+" envio: "+str(self.fecha_envio)+" resp: "+str(self.fecha_resp)+" estado: "+self.estado
@@ -59,11 +55,19 @@ class TiposDeTutelas(models.Model):
   
 
 class Tutelas(Documentos):
+ """corregida""" 
  tipo    = models.ForeignKey(TiposDeTutelas)
  adjunto = models.FileField(max_length = 30, upload_to = 'tutelas')
  def __unicode__(self):
   padre = super(Tutelas,self).__unicode__()  
   return padre+" tipo: "+self.tipo.nombre
+
+
+#
+#
+# DESDE ACA FALTA SEGUIR PARA COMPLETAR EL MODELO
+#
+#
 
 class TipoPeticiones(models.Model):
  nombre = models.CharField(max_length = 20)
