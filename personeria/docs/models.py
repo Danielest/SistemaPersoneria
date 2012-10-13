@@ -1,5 +1,8 @@
 import datetime
+from globals import *
+from django.utils import timezone
 from django.db import models
+
 
 # Create your models here.
 
@@ -10,69 +13,77 @@ INVESTIGACIONES = (
  ('TC','translado de conclusion'),
 )
 
+
 #fecha_respuesta = fecha_envio + termino_contestacion "solo dias habiles"
 
 TERMINO_DE_COTESTACION = 16
 TERMINO_DE_COTESTACION_OFICIOS = 10
 TERMINO_DE_COTESTACION_PROCESOS_DICOPLINARIOS = 3  
 
+class TerminoDeContestacion(models.Model):
+ """maneja el termino de contestacion"""
+ nombre = models.CharField( max_length = 3 ,choices = INVESTIGACIONES)
+ dias   = models.IntegerField()
+
+        
 
 class Ciudadanos(models.Model):
- nombre    = models.CharField(max_length = 20)
- apellido1 = models.CharField('primer apellido', max_length = 20)
- apellido2 = models.CharField('segundo apellido', max_length = 20)
- cedula    = models.CharField(max_length = 25) 
- direccion = models.CharField(max_length = 100)
- barrio    = models.CharField(max_length = 30)
- tel       = models.IntegerField('telefono', max_length = 15)
- email     = models.EmailField(max_length = 30)
+ apellido1 = models.CharField( max_length = 20, default = "" )
+ apellido2 = models.CharField( max_length = 20, blank = True, default = "" )
+ barrio    = models.CharField( max_length = 30, default = "" )
+ cedula    = models.CharField( max_length = 25, default = "" ) 
+ direccion = models.CharField( max_length = 100, default = "" )
+ email     = models.EmailField( max_length = 30,blank = True, default = "" )
+ nombre    = models.CharField( max_length = 20, default = "" )
+ tel       = models.CharField( max_length = 15, blank = True, default = "" ) 
  #...
  def __unicode__(self):
-  return "nombre:",self.nombre,self.apellido1,self,apellido2," cedula:",self.cedula," direccion:",self.direccion," barrio:",self.barrio," tel:",self.tel," email:",self.email
+  return "nombre: "+self.nombre+" "+self.apellido1+" "+self.apellido2+" cedula: "+self.cedula+" direccion: "+self.direccion+" barrio: "+self.barrio+" tel: "+self.tel+" email: "+self.email
  def nombreCompleto(self):
-  return self.nombre,self.apellido1,self.apellido2
-
+  return self.nombre+" "+self.apellido1+" "+self.apellido2
+ 
 class Documentos(models.Model):
- accionante   = models.ForeignKey(Ciudadanos)
- accionado   = models.CharField(max_length = 60)
- fecha_envio = models.DateField('fecha de envio', blank = False, null = False)
- fecha_resp  = models.DateField('fecha de respuesta', blank = False, null = False)
- estado      = models.BooleanField()
- adjunto     = models.FileField(max_length = 300, upload_to = 'docs')
+ accionante  = models.ForeignKey(Ciudadanos)
+ accionado   = models.CharField( max_length = 60, default = "" )
+ estado      = models.CharField( max_length = 3, choices = ESTADO, default = "proceso" )
+ fecha_envio = models.DateField( blank = False, default = timezone.now() )
+ fecha_resp  = models.DateField( editable = False )
  #...
  def __unicode__(self):
-  return "accionante:",self.accionante," accionado:",self.accionado," envio:",self.fecha_envio," resp:",self.fecha_resp," estado:",self.estado
+  return "accionante: "+self.accionante.nombre+" accionado: "+self.accionado+" envio: "+str(self.fecha_envio)+" resp: "+str(self.fecha_resp)+" estado: "+self.estado
 
 class TiposDeTutelas(models.Model):
  nombre = models.CharField(max_length = 20)
  def __unicode__(self):
-  return "nombre: ",self.nombre
+  return "nombre: "+self.nombre
   
 
 class Tutelas(Documentos):
- tipo = models.ForeignKey(TiposDeTutelas)
+ tipo    = models.ForeignKey(TiposDeTutelas)
+ adjunto = models.FileField(max_length = 30, upload_to = 'tutelas')
  def __unicode__(self):
-  return "tipo:",self.tipo
+  padre = super(Tutelas,self).__unicode__()  
+  return padre+" tipo: "+self.tipo.nombre
 
 class TipoPeticiones(models.Model):
  nombre = models.CharField(max_length = 20)
  def __unicode__(self):
-  return "nombre:",self.nombre
+  return "nombre: ",self.nombre
 
 class Peticiones(Documentos):
  tipo = models.ForeignKey(TipoPeticiones)
  def __unicode__(self):
-  return "tipo:",self.tipo
+  return "tipo: ",self.tipo
 
 class Desacatos(Tutelas):
  radicado = models.CharField(max_length = 30)
  def __unicode__(self):
-  return "radicado:",self.radicado
+  return "radicado: ",self.radicado
 
 class ProcesosDiciplinarios(Documentos):
  investigacion = models.CharField(max_length = 2, choices = INVESTIGACIONES)
  def __unicode__(self):
-  return "investigacion:",self.investigacion
+  return "investigacion: ",self.investigacion
 
 class Oficios(Documentos):
  asutno            = models.TextField(max_length = 200)
@@ -80,7 +91,7 @@ class Oficios(Documentos):
  notificacion      = models.TextField(max_length = 200)
  proceso_diciplinario = models.ForeignKey(ProcesosDiciplinarios)
  def __unicode__(self):
-  return "asuto:",self.asutno," termino de contestacion:",self.term_de_cont," notificacion:",self.notificacion," proceso diciplinario:",self.proceso_diciplinario
+  return "asuto: ",self.asutno," termino de contestacion: ",self.term_de_cont," notificacion: ",self.notificacion," proceso diciplinario: ",self.proceso_diciplinario
 
         
 
