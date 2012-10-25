@@ -122,8 +122,8 @@ class Asunto(models.Model):
   nombre  = models.CharField( max_length = 2, choices=ASUNTOS)
   victima = models.ForeignKey(Victimas)
   def __unicode__(self):
-    return "Nombre: "+self.nombre+" Victima: "+self.victima.__unicode__()
-
+    return "Nombre:  "+self.nombre+" Victima: "+self.victima.__unicode__()
+ 
 # class Funcionario(models.Model):
 #   apellido1 = models.CharField( max_length = 45, default= "" )
 #   apellido2 = models.CharField( max_length = 45, blank = True, default = "" )
