@@ -70,17 +70,17 @@ class TipoPeticiones(models.Model):
 class Peticiones(Documentos):
  tipo = models.ForeignKey(TipoPeticiones)
  def __unicode__(self):
-  padre= super(Documentos,self).__unicode__()
-  return padre+" tipo: "+self.tipo
+  padre= super(Peticiones,self).__unicode__()
+  return padre+" tipo: "+self.tipo.__unicode__()
 
 class Desacatos(Tutelas):
  radicado = models.CharField(max_length = 30)
  def __unicode__(self):
-  padre= super(Tutelas,self).__unicode__()
+  padre = super(Desacatos,self).__unicode__()
   return padre+" radicado: "+self.radicado
 
 class Investigacion(models.Model):
-  nombre= models.CharField( max_length = 2, choices = INVESTIGACIONES )
+  nombre = models.CharField( max_length = 2, choices = INVESTIGACIONES )
   def __unicode__(self):
     return "Nombre: "+self.nombre
 
@@ -90,29 +90,31 @@ class Oficios(Documentos):
  term_de_cont      = models.TextField('termino de contestacion', max_length = 200)
  notificacion      = models.TextField(max_length = 200)
  def __unicode__(self):
-  padre= super(Documentos,self).__unicode__()
-  return padre+" asunto: "+self.asunto+" termino de contestacion: "+self.term_de_cont+" notificacion: "+self.notificacion+" proceso diciplinario: "+self.proceso_diciplinario
+  padre = super(Oficios,self).__unicode__()
+  return (padre+" asunto: "+self.asunto+" termino de contestacion: "+self.term_de_cont+
+         " notificacion: "+self.notificacion+" proceso diciplinario: "+self.proceso_diciplinario.__unicode__())
 
 class ProcesosDisciplinarios(Documentos):
  investigacion = models.ForeignKey(Investigacion)#hice esta modificacion porque aqui va la foranea de investigacion
- oficio = models.ForeignKey(Oficios)
+ oficio        = models.ForeignKey(Oficios)
  def __unicode__(self):
-  padre= super(Documentos,self).__unicode__()
+  padre = super(ProcesosDisciplinarios,self).__unicode__()
   return padre+" investigacion: "+self.investigacion.__unicode__()
 
 
 
 class Notificacion(models.Model):
-  nombre= models.CharField( max_length = 2, choices = NOTIFICACIONES  )
+  nombre                = models.CharField( max_length = 2, choices = NOTIFICACIONES  )
   proceso_disciplinario = models.ForeignKey(ProcesosDisciplinarios)
   def __unicode__(self):
-    return "Nombre: "+self.nombre+" Proceso Disciplinario: "+self.proceso_disciplinario
+    return "Nombre: "+self.nombre+" Proceso Disciplinario: "+self.proceso_disciplinario.__unicode__()
+
 
 class Victimas(models.Model):
   accionante = models.ForeignKey(Ciudadanos)
   estado     = models.BooleanField(default = False, blank= False)
   def __unicode__(self):
-    return "accionante: ",self.accionante.nombre," estado: ", self.estado
+    return "accionante: ",self.accionante.__unicode__," estado: ", self.estado
 
 #veo rara la relacion victimas/asunto, o no la entiendo!, pero no la he modificado
 class Asunto(models.Model):
@@ -120,7 +122,7 @@ class Asunto(models.Model):
   nombre  = models.CharField( max_length = 2, choices=ASUNTOS)
   victima = models.ForeignKey(Victimas)
   def __unicode__(self):
-    return "Nombre: "+self.nombre+" Victima: "+self.victima.accionante.nombre
+    return "Nombre: "+self.nombre+" Victima: "+self.victima.__unicode__()
 
 # class Funcionario(models.Model):
 #   apellido1 = models.CharField( max_length = 45, default= "" )
