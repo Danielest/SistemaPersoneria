@@ -25,7 +25,9 @@ class Ciudadanos(models.Model):
  tel       = models.CharField( max_length = 15, blank = True, default = "" )
  #...
  def __unicode__(self):
-  return "nombre: "+self.nombre+" "+self.apellido1+" "+self.apellido2+" cedula: "+self.cedula+" direccion: "+self.direccion+" barrio: "+self.barrio+" tel: "+self.tel+" email: "+self.email
+  return ("nombre: "+self.nombre+" "+self.apellido1+" "+self.apellido2+
+        " cedula: "+self.cedula+" direccion: "+self.direccion+" barrio: "+self.barrio+
+        " tel: "+self.tel+" email: "+self.email)
  def nombreCompleto(self):
   return self.nombre+" "+self.apellido1+" "+self.apellido2
 
@@ -68,33 +70,37 @@ class TipoPeticiones(models.Model):
 class Peticiones(Documentos):
  tipo = models.ForeignKey(TipoPeticiones)
  def __unicode__(self):
-  return "tipo: ",self.tipo
+  padre= super(Documentos,self).__unicode__()
+  return padre+" tipo: "+self.tipo
 
 class Desacatos(Tutelas):
  radicado = models.CharField(max_length = 30)
  def __unicode__(self):
-  return "radicado: ",self.radicado
+  padre= super(Tutelas,self).__unicode__()
+  return padre+" radicado: "+self.radicado
 
 class Investigacion(models.Model):
   nombre= models.CharField( max_length = 2, choices = INVESTIGACIONES )
   def __unicode__(self):
     return "Nombre: "+self.nombre
 
-class ProcesosDisciplinarios(Documentos):
- investigacion = models.ForeignKey(Investigacion)#hice esta modificacion porque aqui va la foranea de investigacion
- def __unicode__(self):
-  return "investigacion: ",self.investigacion
 
 class Oficios(Documentos):
  asunto            = models.TextField(max_length = 200)
  term_de_cont      = models.TextField('termino de contestacion', max_length = 200)
  notificacion      = models.TextField(max_length = 200)
- proceso_disciplinario = models.ForeignKey(ProcesosDisciplinarios)
  def __unicode__(self):
-  return "asunto: ",self.asunto," termino de contestacion: ",self.term_de_cont," notificacion: ",self.notificacion," proceso diciplinario: ",self.proceso_diciplinario
+  padre= super(Documentos,self).__unicode__()
+  return padre+" asunto: "+self.asunto+" termino de contestacion: "+self.term_de_cont+" notificacion: "+self.notificacion+" proceso diciplinario: "+self.proceso_diciplinario
+
+class ProcesosDisciplinarios(Documentos):
+ investigacion = models.ForeignKey(Investigacion)#hice esta modificacion porque aqui va la foranea de investigacion
+ oficio = models.ForeignKey(Oficios)
+ def __unicode__(self):
+  padre= super(Documentos,self).__unicode__()
+  return padre+" investigacion: "+self.investigacion.__unicode__()
 
 
-#Hay que probar
 
 class Notificacion(models.Model):
   nombre= models.CharField( max_length = 2, choices = NOTIFICACIONES  )
@@ -116,30 +122,18 @@ class Asunto(models.Model):
   def __unicode__(self):
     return "Nombre: "+self.nombre+" Victima: "+self.victima.accionante.nombre
 
-class User(models.Model):
-  nick = models.CharField( max_length = 6, default="" )
-  password = models.CharField( max_length = 10, default="" )
-  def __unicode__(self):
-    return "Nick: "+self.nick+ " password: "+self.password
-
-class Rol(models.Model):
-  descripcion = models.CharField( max_length = 40, default="" )
-  nombre= models.CharField( max_length = 20, default="" )
-  def __unicode__(self):
-    return "Rol: "+self.nombre+" descripcion: "+self.descripcion
-
-class Funcionario(models.Model):
-  apellido1 = models.CharField( max_length = 45, default= "" )
-  apellido2 = models.CharField( max_length = 45, blank = True, default = "" )
-  cedula = models.CharField( max_length = 15, default = "" )
-  direccion = models.CharField( max_length = 15, default = "" )
-  nombre = models.CharField( max_length = 45, default="" )
-  barrio = models.CharField( max_length = 45, default="" )
-  tel = models.CharField( max_length = 20, blank = True, default = "" )
-  email = models.EmailField( max_length = 30,blank = True, default = "" )
-  #adjunto = models.FileField(max_length = 30, upload_to = 'funcionarios')
-  user= models.ForeignKey(User)
-  rol = models.ForeignKey(Rol)
-  def __unicode__(self):
-   return "nombre: "+self.nombre+" "+self.apellido1+" "+self.apellido2+" cedula: "+self.cedula+" direccion: "+self.direccion+" barrio: "+self.barrio+" tel: "+self.tel+" email: "+self.email+" User: "+self.user.nick
+# class Funcionario(models.Model):
+#   apellido1 = models.CharField( max_length = 45, default= "" )
+#   apellido2 = models.CharField( max_length = 45, blank = True, default = "" )
+#   cedula = models.CharField( max_length = 15, default = "" )
+#   direccion = models.CharField( max_length = 15, default = "" )
+#   nombre = models.CharField( max_length = 45, default="" )
+#   barrio = models.CharField( max_length = 45, default="" )
+#   tel = models.CharField( max_length = 20, blank = True, default = "" )
+#   email = models.EmailField( max_length = 30,blank = True, default = "" )
+#   adjunto = models.FileField(max_length = 30, upload_to = 'funcionarios')
+#   user= models.ForeignKey(User)
+#   rol = models.ForeignKey(Rol)
+#   def __unicode__(self):
+#    return "nombre: "+self.nombre+" "+self.apellido1+" "+self.apellido2+" cedula: "+self.cedula+" direccion: "+self.direccion+" barrio: "+self.barrio+" tel: "+self.tel+" email: "+self.email+" User: "+self.user.nick
 
