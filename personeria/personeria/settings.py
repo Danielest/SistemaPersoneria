@@ -109,7 +109,7 @@ ROOT_URLCONF = 'personeria.urls'
 WSGI_APPLICATION = 'personeria.wsgi.application'
 
 TEMPLATE_DIRS = (
-    # Put strings here, like "/home/html/django_templates" or "C:/www/django/templates".
+    os.path.join(RUTA_PROYECTO,'plantillas'),
     # Always use forward slashes, even on Windows.
     # Don't forget to use absolute paths, not relative paths.
 )
