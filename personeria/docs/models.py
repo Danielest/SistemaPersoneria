@@ -102,7 +102,6 @@ class ProcesosDisciplinarios(Documentos):
   return padre+" investigacion: "+self.investigacion.__unicode__()
 
 
-
 class Notificacion(models.Model):
   nombre                = models.CharField( max_length = 2, choices = NOTIFICACIONES  )
   proceso_disciplinario = models.ForeignKey(ProcesosDisciplinarios)
@@ -123,7 +122,7 @@ class Asunto(models.Model):
   victima = models.ForeignKey(Victimas)
   def __unicode__(self):
     return "Nombre:  "+self.nombre+" Victima: "+self.victima.__unicode__()
- 
+
 # class Funcionario(models.Model):
 #   apellido1 = models.CharField( max_length = 45, default= "" )
 #   apellido2 = models.CharField( max_length = 45, blank = True, default = "" )
