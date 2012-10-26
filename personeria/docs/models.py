@@ -9,12 +9,12 @@ from django.db import models
 
 
 class TerminoDeContestacion(models.Model):
- """maneja el termino de contestacion"""
+ """esta tabla brinda para cada documento el numero de dias que se tendra para el calculo de la fecha de respuesta"""
  nombre = models.CharField( max_length = 3 ,choices = TERMINO_DE_COTESTACION)
  dias   = models.IntegerField()
 
 
-class Ciudadanos(models.Model):
+class Ciudadano(models.Model):
  apellido1 = models.CharField( max_length = 20, default = "" )
  apellido2 = models.CharField( max_length = 20, blank = True, default = "" )
  barrio    = models.CharField( max_length = 30, default = "" )
@@ -30,31 +30,55 @@ class Ciudadanos(models.Model):
         " tel: "+self.tel+" email: "+self.email)
  def nombreCompleto(self):
   return self.nombre+" "+self.apellido1+" "+self.apellido2
+ #para que se pueda ordenar en el modulo de administracion
+ nombreCompleto.admin_order_field = 'nombre'
+ nombreCompleto.short_description = 'Nombre Completo'
 
-class Documentos(models.Model):
- accionante  = models.ForeignKey(Ciudadanos)
+
+
+class Documento(models.Model):
+ accionante  = models.ForeignKey(Ciudadano)
  accionado   = models.CharField( max_length = 60, default = "" )
  estado      = models.CharField( max_length = 3, choices = ESTADO, default = "PRO" )
  fecha_envio = models.DateField( blank = False, default = timezone.now() )
- fecha_resp  = models.DateField( editable = False , null=True)
+ fecha_resp  = models.DateField( editable = True )
  #...
  def __unicode__(self):
   return "accionante: "+self.accionante.nombre+" accionado: "+self.accionado+" envio: "+str(self.fecha_envio)+" resp: "+str(self.fecha_resp)+" estado: "+self.estado
 
-class TiposDeTutelas(models.Model):
+class TipoTutela(models.Model):
  nombre = models.CharField(max_length = 20)
  def __unicode__(self):
   return "nombre: "+self.nombre
 
-
-class Tutelas(Documentos):
+class Tutela(Documento):
  """corregida"""
- tipo    = models.ForeignKey(TiposDeTutelas)
- adjunto = models.FileField(max_length = 30, upload_to = 'tutelas')
+ adjunto = models.FileField(upload_to = 'img/tutelas')
+ tipo    = models.ForeignKey(TipoTutela)
  def __unicode__(self):
-  padre = super(Tutelas,self).__unicode__()
+  padre = super(Tutela,self).__unicode__()
   return padre+" tipo: "+self.tipo.nombre
+ def getAccionante(self):
+    return self.accionante.cedula
+ getAccionante.short_description = "Accionante"
 
+class TipoPeticion(models.Model):
+ nombre = models.CharField(max_length = 20)
+ def __unicode__(self):
+  return "nombre: "+self.nombre
+
+class Peticion(Documento):
+ adjunto = models.FileField(upload_to = 'img/peticiones')
+ tipo = models.ForeignKey(TipoPeticion)
+ def __unicode__(self):
+  padre= super(Peticiones,self).__unicode__()
+  return padre+" tipo: "+self.tipo.__unicode__()
+
+class Desacato(Tutela):
+ radicado = models.CharField(max_length = 30)
+ def __unicode__(self):
+  padre = super(Desacato,self).__unicode__()
+  return padre+" radicado: "+self.radicado
 
 #
 #
@@ -62,65 +86,46 @@ class Tutelas(Documentos):
 #
 #
 
-class TipoPeticiones(models.Model):
- nombre = models.CharField(max_length = 20)
+class Oficio(Documento):
+ adjunto      = models.FileField(upload_to = 'img/oficios')
+ asunto       = models.TextField(max_length = 200)
+ notificacion = models.TextField(max_length = 200)
+ num_fallo    = models.IntegerField()
  def __unicode__(self):
-  return "nombre: "+self.nombre
+  padre = super(Oficio,self).__unicode__()
+  return (padre+" \n Asunto: "+self.asunto+
+         "\n notificacion: "+self.notificacion+" proceso diciplinario: ")
 
-class Peticiones(Documentos):
- tipo = models.ForeignKey(TipoPeticiones)
+class ProcesoDisciplinario(models.Model):
+ adjunto       = models.FileField(upload_to = 'img/procesos_diciplinarios')
+ ent_notific   = models.TextField(max_length = 200)
+ estado        = models.CharField( max_length = 3, choices = ESTADO, default = "PRO" )
+ fecha_envio   = models.DateField( blank = False, default = timezone.now() )
+ fecha_resp    = models.DateField( editable = True ) 
+ investigacion = models.CharField( max_length = 2, choices = INVESTIGACIONES )
+ oficio        = models.ForeignKey(Oficio)
  def __unicode__(self):
-  padre= super(Peticiones,self).__unicode__()
-  return padre+" tipo: "+self.tipo.__unicode__()
-
-class Desacatos(Tutelas):
- radicado = models.CharField(max_length = 30)
- def __unicode__(self):
-  padre = super(Desacatos,self).__unicode__()
-  return padre+" radicado: "+self.radicado
-
-class Investigacion(models.Model):
-  nombre = models.CharField( max_length = 2, choices = INVESTIGACIONES )
-  def __unicode__(self):
-    return "Nombre: "+self.nombre
-
-
-class Oficios(Documentos):
- asunto            = models.TextField(max_length = 200)
- term_de_cont      = models.TextField('termino de contestacion', max_length = 200)
- notificacion      = models.TextField(max_length = 200)
- def __unicode__(self):
-  padre = super(Oficios,self).__unicode__()
-  return (padre+" asunto: "+self.asunto+" termino de contestacion: "+self.term_de_cont+
-         " notificacion: "+self.notificacion+" proceso diciplinario: "+self.proceso_diciplinario.__unicode__())
-
-class ProcesosDisciplinarios(Documentos):
- investigacion = models.ForeignKey(Investigacion)#hice esta modificacion porque aqui va la foranea de investigacion
- oficio        = models.ForeignKey(Oficios)
- def __unicode__(self):
-  padre = super(ProcesosDisciplinarios,self).__unicode__()
-  return padre+" investigacion: "+self.investigacion.__unicode__()
-
-
+  return " investigacion: "+self.investigacion
 
 class Notificacion(models.Model):
-  nombre                = models.CharField( max_length = 2, choices = NOTIFICACIONES  )
-  proceso_disciplinario = models.ForeignKey(ProcesosDisciplinarios)
+  nombre      = models.CharField( max_length = 2, choices = NOTIFICACIONES  )
+  descripcion = models.CharField( max_length = 400);
+  proc_discip = models.ForeignKey(ProcesoDisciplinario)
   def __unicode__(self):
-    return "Nombre: "+self.nombre+" Proceso Disciplinario: "+self.proceso_disciplinario.__unicode__()
+    return "Nombre: "+self.nombre+" Proceso Disciplinario: "+self.proc_discip.__unicode__()
 
 
-class Victimas(models.Model):
-  accionante = models.ForeignKey(Ciudadanos)
-  estado     = models.BooleanField(default = False, blank= False)
+class Victima(models.Model):
+  accionante = models.ForeignKey(Ciudadano)
+  estado     = models.BooleanField(default = False)
   def __unicode__(self):
-    return "accionante: ",self.accionante.__unicode__," estado: ", self.estado
+    return "accionante: "+self.accionante.__unicode__()+" estado: "+str(self.estado)
 
 #veo rara la relacion victimas/asunto, o no la entiendo!, pero no la he modificado
 class Asunto(models.Model):
-  #adjunto = models.FileField(max_length = 30, upload_to = 'asuntos')
+  adjunto = models.FileField(upload_to = 'asuntos')
   nombre  = models.CharField( max_length = 2, choices=ASUNTOS)
-  victima = models.ForeignKey(Victimas)
+  victima = models.ForeignKey(Victima)
   def __unicode__(self):
     return "Nombre:  "+self.nombre+" Victima: "+self.victima.__unicode__()
  
