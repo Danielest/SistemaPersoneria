@@ -2,8 +2,7 @@ import datetime
 from globals import *
 from django.utils import timezone
 from django.db import models
-
-
+# from django.contrib.auth.models import User, Groups
 
 #fecha_respuesta = fecha_envio + termino_contestacion "solo dias habiles"
 
