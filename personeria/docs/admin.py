@@ -6,14 +6,14 @@ from docs.models import *
 class CiudadanoAdmin(admin.ModelAdmin):
   #fields = ['nombre', 'apellido1','apellido2','cedula','barrio','direccion','tel','email']
   fieldsets = [
-    ('Informacion Personal' , {'fields':['nombre', 'apellido1','apellido2','cedula']}),
-    ('Localidad'            , {'fields':['barrio','direccion']}),
-    ('Otros'                   , {'fields':['tel','email'],'classes': ['collapse']})
+    ('Informacion Personal' , {
+      'fields':[('nombre', 'apellido1','apellido2'),'cedula','tel','email']}),#con los parentesis se ponene los campos en la misma fila
+    ('Localidad'            , {'fields':['barrio','direccion']})
   ]
   list_display = ('nombreCompleto','cedula')
-  #list_filter = ['cedula','nombre']
   search_fields = ['cedula','nombre']
-  # date_hierarchy = 'pub_date'
+  ordering = ("nombre","apellido1","apellido2","cedula")
+
 admin.site.register(Ciudadano,CiudadanoAdmin)
 
 #formulario de Tutelas
@@ -21,12 +21,23 @@ admin.site.register(TipoTutela)
 
 class TutelaAdmin(admin.ModelAdmin):
   fieldset = [
-   (None,{'fields': ['accionante','accionado','tipo','fecha_envio','fecha_resp','estado','adjunto']})
-   ] 
-  list_display   = ('getAccionante','accionado','tipo','fecha_envio','fecha_resp','estado') 
+     ("Tutela" , {'fields': ['accionante','accionado','tipo','fecha_envio','fecha_resp','estado','adjunto']})
+   ]
+  raw_id_fields  = ('accionante',)#esto es para que aparesca un campo de busqueda en vez de un select
+  
+  list_display   = ('accionante_cedula','accionante_nombre','accionado','tipo','fecha_envio','fecha_resp','estado') 
   date_hierarchy = 'fecha_envio'
-  search_fields  = ['accionado'] 
-  list_filter = ['fecha_envio','fecha_resp']
+  search_fields  = ['accionado','accionante__cedula','accionante__nombre']# para que pueda buscar por llave foranea toca poner modelo__campo
+  list_filter = ['estado']
+  ordering = ('fecha_envio','fecha_resp')
+
+  def accionante_nombre(self,obj):
+    return obj.accionante.nombre
+  accionante_nombre.short_description = "Accionante"
+  def accionante_cedula(self, obj):
+    return obj.accionante.cedula
+  accionante_cedula.short_description = "Accionante cedula"
+
 admin.site.register(Tutela,TutelaAdmin)
 
 #formulario de Peticiones

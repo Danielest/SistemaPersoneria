@@ -15,24 +15,22 @@ class TerminoDeContestacion(models.Model):
 
 
 class Ciudadano(models.Model):
- apellido1 = models.CharField( max_length = 20, default = "" )
- apellido2 = models.CharField( max_length = 20, blank = True, default = "" )
- barrio    = models.CharField( max_length = 30, default = "" )
- cedula    = models.CharField( max_length = 25, default = "" )
- direccion = models.CharField( max_length = 100, default = "" )
- email     = models.EmailField( max_length = 30,blank = True, default = "" )
- nombre    = models.CharField( max_length = 20, default = "" )
- tel       = models.CharField( max_length = 15, blank = True, default = "" )
- #...
- def __unicode__(self):
-  return ("nombre: "+self.nombre+" "+self.apellido1+" "+self.apellido2+
-        " cedula: "+self.cedula+" direccion: "+self.direccion+" barrio: "+self.barrio+
-        " tel: "+self.tel+" email: "+self.email)
- def nombreCompleto(self):
-  return self.nombre+" "+self.apellido1+" "+self.apellido2
- #para que se pueda ordenar en el modulo de administracion
- nombreCompleto.admin_order_field = 'nombre'
- nombreCompleto.short_description = 'Nombre Completo'
+  apellido1 = models.CharField( max_length = 20, default = "" )
+  apellido2 = models.CharField( max_length = 20, blank = True, default = "" )
+  barrio    = models.CharField( max_length = 30, default = "" )
+  cedula    = models.CharField( max_length = 25, default = "" )
+  direccion = models.CharField( max_length = 100, default = "" )
+  email     = models.EmailField( max_length = 30,blank = True, default = "" )
+  nombre    = models.CharField( max_length = 20, default = "" )
+  tel       = models.CharField( max_length = 15, blank = True, default = "" )
+  #aca van los metodos
+  def __unicode__(self):
+   return (str(self.id)+","+str(self.cedula))
+  def nombreCompleto(self):
+   return self.nombre+" "+self.apellido1+" "+self.apellido2
+  #para que se pueda ordenar en el modulo de administracion
+  nombreCompleto.admin_order_field = 'nombre'
+  nombreCompleto.short_description = 'Nombre Completo'
 
 
 
@@ -49,7 +47,7 @@ class Documento(models.Model):
 class TipoTutela(models.Model):
  nombre = models.CharField(max_length = 20)
  def __unicode__(self):
-  return "nombre: "+self.nombre
+  return self.nombre
 
 class Tutela(Documento):
  """corregida"""
@@ -58,9 +56,7 @@ class Tutela(Documento):
  def __unicode__(self):
   padre = super(Tutela,self).__unicode__()
   return padre+" tipo: "+self.tipo.nombre
- def getAccionante(self):
-    return self.accionante.cedula
- getAccionante.short_description = "Accionante"
+ 
 
 class TipoPeticion(models.Model):
  nombre = models.CharField(max_length = 20)
