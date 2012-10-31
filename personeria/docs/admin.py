@@ -23,9 +23,9 @@ class TutelaAdmin(admin.ModelAdmin):
   fieldset = [
      ("Tutela" , {'fields': ['accionante','accionado','tipo','fecha_envio','fecha_resp','estado','adjunto']})
    ]
-  raw_id_fields  = ('accionante',)#esto es para que aparesca un campo de busqueda en vez de un select
-  
-  list_display   = ('accionante_cedula','accionante_nombre','accionado','tipo','fecha_envio','fecha_resp','estado') 
+  raw_id_fields  = ('accionante',)#esto es para que aparezca un campo de busqueda en vez de un select
+
+  list_display   = ('accionante_cedula','accionante_nombre','accionado','tipo','fecha_envio','fecha_resp','estado')
   date_hierarchy = 'fecha_envio'
   search_fields  = ['accionado','accionante__cedula','accionante__nombre']# para que pueda buscar por llave foranea toca poner modelo__campo
   list_filter = ['estado']
@@ -44,8 +44,7 @@ admin.site.register(Tutela,TutelaAdmin)
 admin.site.register(TipoPeticion)
 admin.site.register(Peticion)
 
-#formulario de Desacatos
-admin.site.register(Desacato)
+
 
 #formularios de Oficios
 class ProcesoDiciplinarioInline(admin.StackedInline):
@@ -79,3 +78,15 @@ class VictimaAdmin(admin.ModelAdmin):
 
 admin.site.register(Victima,VictimaAdmin);
 
+class DesacatoAdmin(admin.ModelAdmin):
+  fieldsets = [
+      ("Desacato" , {'fields': ['accionante','accionado','tipo','fecha_envio','fecha_resp','estado','adjunto']})#con los parentesis se ponene los campos en la misma fila
+  ]
+  raw_id_fields  = ('accionante',)
+  list_display   = ('accionado','tipo','fecha_envio','fecha_resp','estado')
+  list_filter = ['estado']
+  search_fields  = ['accionado','accionante__cedula','accionante__nombre']
+  date_hierarchy = 'fecha_envio'
+
+#formulario de Desacatos
+admin.site.register(Desacato,DesacatoAdmin)

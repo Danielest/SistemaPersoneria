@@ -56,7 +56,7 @@ class Tutela(Documento):
  def __unicode__(self):
   padre = super(Tutela,self).__unicode__()
   return padre+" tipo: "+self.tipo.nombre
- 
+
 
 class TipoPeticion(models.Model):
  nombre = models.CharField(max_length = 20)
@@ -97,7 +97,7 @@ class ProcesoDisciplinario(models.Model):
  ent_notific   = models.TextField(max_length = 200)
  estado        = models.CharField( max_length = 3, choices = ESTADO, default = "PRO" )
  fecha_envio   = models.DateField( blank = False, default = timezone.now() )
- fecha_resp    = models.DateField( editable = True ) 
+ fecha_resp    = models.DateField( editable = True )
  investigacion = models.CharField( max_length = 2, choices = INVESTIGACIONES )
  oficio        = models.ForeignKey(Oficio)
  def __unicode__(self):
@@ -124,7 +124,7 @@ class Asunto(models.Model):
   victima = models.ForeignKey(Victima)
   def __unicode__(self):
     return "Nombre:  "+self.nombre+" Victima: "+self.victima.__unicode__()
- 
+
 # class Funcionario(models.Model):
 #   apellido1 = models.CharField( max_length = 45, default= "" )
 #   apellido2 = models.CharField( max_length = 45, blank = True, default = "" )
