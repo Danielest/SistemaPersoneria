@@ -4,7 +4,6 @@ from django.utils import timezone
 from django.db import models
 
 
-
 #fecha_respuesta = fecha_envio + termino_contestacion "solo dias habiles"
 
 
