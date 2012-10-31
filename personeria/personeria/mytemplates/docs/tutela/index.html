@@ -1,0 +1,10 @@
+{% load url from future %}
+{% if tutelas_list %}
+<ul>
+    {% for tutela in  tutelas_list %}    
+    <li><a href="{% url 'docs:singleTutela' tutela.id %}">{{ tutela.accionante.nombre }}</a></li>
+    {% endfor %}
+</ul>
+{% else %}
+<p> no hay registro</p>
+{% endif %}
