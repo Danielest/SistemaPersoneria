@@ -88,6 +88,7 @@ class VictimaAdmin(admin.ModelAdmin):
  accionante_cedula.short_description = "Accionante cedula"
 
 
+
 admin.site.register(Ciudadano,CiudadanoAdmin)
 admin.site.register(TipoTutela)
 admin.site.register(Tutela,TutelaAdmin)
