@@ -45,6 +45,9 @@ class DesacatoAdmin(admin.ModelAdmin):
       ("Desacato" , {'fields': ['accionante','accionado','tipo','fecha_envio','fecha_resp','estado','adjunto']})#con los parentesis se ponene los campos en la misma fila
   ]
   raw_id_fields  = ('accionante',)
+  autocomplete_lookup_fields = {
+        'fk': ['accionante'],
+  }
   list_display   = ('accionante_cedula','accionante_nombre','accionado','tipo','fecha_envio','fecha_resp','estado')
   list_filter = ['estado']
   search_fields  = ['accionado','accionante__cedula','accionante__nombre']
@@ -60,6 +63,9 @@ class OficioAdmin(admin.ModelAdmin):
  inlines = [ProcesoDiciplinarioInline]
  list_display=('num_fallo','accionante_cedula','accionante_nombre','accionado','asunto','fecha_envio','fecha_resp','estado','notificacion')
  raw_id_fields = ('accionante',)
+ autocomplete_lookup_fields = {
+        'fk': ['accionante'],
+  }
  search_fields = ('num_fallo','accionante__cedula','accionante__nombre','accionado',)
  def accionante_nombre(self,obj):
      return obj.accionante.nombre
@@ -75,13 +81,8 @@ class NotificacionInline(admin.StackedInline):
 
 class ProcesoDiciplinarioAdmin(admin.ModelAdmin):
  inlines = [NotificacionInline]
- list_display   = ('accionante_nombre','oficio','ent_notific','estado','fecha_envio','fecha_resp','investigacion')
- def accionante_nombre(self,obj):
-     return obj.accionante.nombre
- accionante_nombre.short_description = "Accionante"
- def accionante_cedula(self, obj):
-     return obj.accionante.cedula
- accionante_cedula.short_description = "Accionante cedula"
+ list_display   = ('ent_notific','estado','fecha_envio','fecha_resp','investigacion')
+ #
 
 class AsuntoInline(admin.TabularInline):
   """Formulario de Victimas"""
@@ -94,6 +95,9 @@ class VictimaAdmin(admin.ModelAdmin):
       ("Victimas" , {'fields': [('accionante'),'estado']})#con los parentesis se ponene los campos en la misma fila
   ]
  raw_id_fields  = ('accionante',)
+ autocomplete_lookup_fields = {
+        'fk': ['accionante'],
+  }
  list_display   = ('accionante_cedula','accionante_nombre','estado')
  list_filter = ['estado']
  search_fields  = ['accionante__cedula','accionante__nombre']
@@ -120,6 +124,9 @@ class PeticionAdmin(admin.ModelAdmin):
   list_filter   = ['estado','tipo']
   list_display  = ('accionante_cedula','accionante_nombre','accionado','fecha_envio','estado','fecha_resp','tipo')
   search_fields = ('accionante__cedula','accionante__nombre')
+  autocomplete_lookup_fields = {
+        'fk': ['accionante'],
+  }
   def accionante_nombre(self,obj):
      return obj.accionante.nombre
   accionante_nombre.short_description = "Accionante"
