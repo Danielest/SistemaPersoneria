@@ -24,9 +24,14 @@ class Ciudadano(models.Model):
   tel       = models.CharField( max_length = 15, blank = True, default = "" )
   #aca van los metodos
   def __unicode__(self):
-   return (str(self.id)+","+str(self.cedula))
+   return (str(self.nombre)+"("+str(self.cedula)+")")
+  def related_label(self):
+   return (str(self.nombre)+"("+str(self.cedula)+")")
   def nombreCompleto(self):
    return self.nombre+" "+self.apellido1+" "+self.apellido2
+  @staticmethod
+  def autocomplete_search_fields():
+    return ("id__iexact", "nombre__icontains","cedula__icontains")
   #para que se pueda ordenar en el modulo de administracion
   nombreCompleto.admin_order_field = 'nombre'
   nombreCompleto.short_description = 'Nombre Completo'

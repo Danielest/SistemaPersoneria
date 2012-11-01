@@ -13,17 +13,20 @@ class CiudadanoAdmin(admin.ModelAdmin):
   ordering = ("nombre","apellido1","apellido2","cedula")
 
 class TutelaAdmin(admin.ModelAdmin):
+  change_list_template = "admin/change_list_filter_sidebar.html"
+  change_list_filter_template = "admin/filter_listing.html"
   fieldset = [
      ("Tutela" , {'fields': ['accionante','accionado','tipo','fecha_envio','fecha_resp','estado','adjunto']})
    ]
   raw_id_fields  = ('accionante',)#esto es para que aparezca un campo de busqueda en vez de un select
-
+  autocomplete_lookup_fields = {
+        'fk': ['accionante'],
+  }
   list_display   = ('accionante_cedula','accionante_nombre','accionado','tipo','fecha_envio','fecha_resp','estado')
   date_hierarchy = 'fecha_envio'
   search_fields  = ['accionado','accionante__cedula','accionante__nombre']# para que pueda buscar por llave foranea toca poner modelo__campo
-  list_filter = ['estado']
+  list_filter = ['estado','tipo']
   ordering = ('fecha_envio','fecha_resp')
-
   def accionante_nombre(self,obj):
     return obj.accionante.nombre
   accionante_nombre.short_description = "Accionante"
