@@ -75,11 +75,6 @@ class Desacato(Tutela):
   padre = super(Desacato,self).__unicode__()
   return padre+" radicado: "+self.radicado
 
-#
-#
-# DESDE ACA FALTA SEGUIR PARA COMPLETAR EL MODELO
-#
-#
 
 class Oficio(Documento):
  adjunto      = models.FileField(upload_to = 'img/oficios')

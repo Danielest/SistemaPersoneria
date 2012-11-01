@@ -87,12 +87,24 @@ class VictimaAdmin(admin.ModelAdmin):
      return obj.accionante.cedula
  accionante_cedula.short_description = "Accionante cedula"
 
+class TipoTutelasAdmin(admin.ModelAdmin):
+  list_display   = ('nombre',)
+  ordering = ('nombre',)
+  search_fields  = ('nombre',)
+
+class TipoPeticionAdmin(admin.ModelAdmin):
+  list_display   = ('nombre',)
+  ordering = ('nombre',)
+  search_fields  = ('nombre',)
+
+
+
 
 
 admin.site.register(Ciudadano,CiudadanoAdmin)
-admin.site.register(TipoTutela)
+admin.site.register(TipoTutela,TipoTutelasAdmin)
 admin.site.register(Tutela,TutelaAdmin)
-admin.site.register(TipoPeticion)
+admin.site.register(TipoPeticion,TipoPeticionAdmin)
 admin.site.register(Peticion)
 admin.site.register(Desacato,DesacatoAdmin)
 admin.site.register(Oficio,OficioAdmin)
