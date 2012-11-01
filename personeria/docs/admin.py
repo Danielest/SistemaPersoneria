@@ -55,7 +55,15 @@ class DesacatoAdmin(admin.ModelAdmin):
 
 class OficioAdmin(admin.ModelAdmin):
  inlines = [ProcesoDiciplinarioInline]
-
+ list_display=('num_fallo','accionante_cedula','accionante_nombre','accionado','asunto','fecha_envio','fecha_resp','estado','notificacion')
+ raw_id_fields = ('accionante',)
+ search_fields = ('num_fallo','accionante__cedula','accionante__nombre','accionado',)
+ def accionante_nombre(self,obj):
+     return obj.accionante.nombre
+ accionante_nombre.short_description = "Accionante"
+ def accionante_cedula(self, obj):
+     return obj.accionante.cedula
+ accionante_cedula.short_description = "Accionante cedula"
 class NotificacionInline(admin.StackedInline):
   """Formulario de procesos Disciplinario"""
   model   = Notificacion
@@ -97,15 +105,24 @@ class TipoPeticionAdmin(admin.ModelAdmin):
   ordering = ('nombre',)
   search_fields  = ('nombre',)
 
-
-
+class PeticionAdmin(admin.ModelAdmin):
+  raw_id_fields = ('accionante',)
+  list_filter   = ['estado','tipo']
+  list_display  = ('accionante_cedula','accionante_nombre','accionado','fecha_envio','estado','fecha_resp','tipo')
+  search_fields = ('accionante__cedula','accionante__nombre')
+  def accionante_nombre(self,obj):
+     return obj.accionante.nombre
+  accionante_nombre.short_description = "Accionante"
+  def accionante_cedula(self, obj):
+     return obj.accionante.cedula
+  accionante_cedula.short_description = "Accionante cedula"
 
 
 admin.site.register(Ciudadano,CiudadanoAdmin)
 admin.site.register(TipoTutela,TipoTutelasAdmin)
 admin.site.register(Tutela,TutelaAdmin)
 admin.site.register(TipoPeticion,TipoPeticionAdmin)
-admin.site.register(Peticion)
+admin.site.register(Peticion,PeticionAdmin)
 admin.site.register(Desacato,DesacatoAdmin)
 admin.site.register(Oficio,OficioAdmin)
 admin.site.register(ProcesoDisciplinario,ProcesoDiciplinarioAdmin);

@@ -60,13 +60,13 @@ class Tutela(Documento):
 class TipoPeticion(models.Model):
  nombre = models.CharField(max_length = 20)
  def __unicode__(self):
-  return "nombre: "+self.nombre
+  return self.nombre
 
 class Peticion(Documento):
  adjunto = models.FileField(upload_to = 'img/peticiones')
  tipo = models.ForeignKey(TipoPeticion)
  def __unicode__(self):
-  padre= super(Peticiones,self).__unicode__()
+  padre= super(Peticion,self).__unicode__()
   return padre+" tipo: "+self.tipo.__unicode__()
 
 class Desacato(Tutela):
