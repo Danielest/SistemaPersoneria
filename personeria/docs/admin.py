@@ -72,6 +72,13 @@ class NotificacionInline(admin.StackedInline):
 
 class ProcesoDiciplinarioAdmin(admin.ModelAdmin):
  inlines = [NotificacionInline]
+ list_display   = ('accionante_nombre','oficio','ent_notific','estado','fecha_envio','fecha_resp','investigacion')
+ def accionante_nombre(self,obj):
+     return obj.accionante.nombre
+ accionante_nombre.short_description = "Accionante"
+ def accionante_cedula(self, obj):
+     return obj.accionante.cedula
+ accionante_cedula.short_description = "Accionante cedula"
 
 class AsuntoInline(admin.TabularInline):
   """Formulario de Victimas"""

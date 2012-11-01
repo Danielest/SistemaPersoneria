@@ -5,10 +5,9 @@ from django.shortcuts import render         #2) segunda forma de hacerlo
 from docs.models import Tutela
 
 
-
-def index(request): 
+def index(request):
   tutelas_list = Tutela.objects.order_by('-fecha_envio')[:5]
-  output = ' , '.join([p.estado for p in tutelas_list])  
+  output = ' , '.join([p.estado for p in tutelas_list])
   return HttpResponse(output)
 
 def indexCiudadano(request):
@@ -33,7 +32,7 @@ def indexTutela(request):
 def singleTutela(request, tut_id):
   try:
     tutela = Tutela.objects.get(pk=tut_id)
-  except Tutela.DoesNotExist: 
+  except Tutela.DoesNotExist:
     raise Http404
   return render(request,"docs/tutela/tutela.html",{'tutela': tutela})
 

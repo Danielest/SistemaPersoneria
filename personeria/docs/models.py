@@ -31,8 +31,6 @@ class Ciudadano(models.Model):
   nombreCompleto.admin_order_field = 'nombre'
   nombreCompleto.short_description = 'Nombre Completo'
 
-
-
 class Documento(models.Model):
  accionante  = models.ForeignKey(Ciudadano)
  accionado   = models.CharField( max_length = 60, default = "" )
