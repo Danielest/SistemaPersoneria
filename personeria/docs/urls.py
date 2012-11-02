@@ -12,5 +12,8 @@ urlpatterns = patterns('',
     #paginas para tutelas
     url(r'^tutela/?$', views.indexTutela, name='indexTutela'),
     url(r'^tutela/(?P<tut_id>\d+)/$', views.singleTutela, name='singleTutela'),
+
+    url(r'^pdf/', views.pruebapdf, name='pdf'),
+
 )
 

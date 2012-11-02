@@ -12,6 +12,9 @@ class CiudadanoAdmin(admin.ModelAdmin):
   search_fields = ['cedula','nombre']
   ordering = ("nombre","apellido1","apellido2","cedula")
 
+
+
+
 class TutelaAdmin(admin.ModelAdmin):
   change_list_template = "admin/change_list_filter_sidebar.html"
   change_list_filter_template = "admin/filter_listing.html"
