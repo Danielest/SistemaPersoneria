@@ -41,6 +41,8 @@ class ProcesoDiciplinarioInline(admin.StackedInline):
   extra   = 1
 
 class DesacatoAdmin(admin.ModelAdmin):
+  change_list_template = "admin/change_list_filter_sidebar.html"
+  change_list_filter_template = "admin/filter_listing.html"
   fieldsets = [
       ("Desacato" , {'fields': ['accionante','accionado','tipo','fecha_envio','fecha_resp','estado','adjunto']})#con los parentesis se ponene los campos en la misma fila
   ]
@@ -90,6 +92,8 @@ class AsuntoInline(admin.TabularInline):
   extra = 1
 
 class VictimaAdmin(admin.ModelAdmin):
+ change_list_template = "admin/change_list_filter_sidebar.html"
+ change_list_filter_template = "admin/filter_listing.html"
  inlines = [AsuntoInline]
  fieldsets = [
       ("Victimas" , {'fields': [('accionante'),'estado']})#con los parentesis se ponene los campos en la misma fila
@@ -120,6 +124,8 @@ class TipoPeticionAdmin(admin.ModelAdmin):
   search_fields  = ('nombre',)
 
 class PeticionAdmin(admin.ModelAdmin):
+  change_list_template = "admin/change_list_filter_sidebar.html"
+  change_list_filter_template = "admin/filter_listing.html"
   raw_id_fields = ('accionante',)
   list_filter   = ['estado','tipo']
   list_display  = ('accionante_cedula','accionante_nombre','accionado','fecha_envio','estado','fecha_resp','tipo')
