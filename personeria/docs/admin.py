@@ -1,8 +1,7 @@
 from django.contrib import admin
-from django import forms 
 from docs.models import *
+from forms import *
 
-import datetime
 
 
 class CiudadanoAdmin(admin.ModelAdmin):
@@ -15,23 +14,12 @@ class CiudadanoAdmin(admin.ModelAdmin):
   search_fields = ['cedula','nombre']
   ordering = ("nombre","apellido1","apellido2","cedula")
 
+#TUTELAS
 
-class TutelaForm(forms.ModelForm):
-  # fecha_envio = forms.DateField(initial=datetime.date.today)
-  class Meta:
-    model = Tutela
-  # Methods
-  def clean(self):
-    fecha_envio = self.cleaned_data['fecha_envio']
-    fecha_resp = self.cleaned_data['fecha_resp']
-    if fecha_envio < datetime.date.today():
-      self._errors['fecha_envio'] = self.error_class(["El dia no puede ser antes de la fecha actual."]) 
-    if fecha_resp < fecha_envio:
-      self._errors['fecha_resp'] = self.error_class(["La fehca de respuesta debe ser despues del dia "])
-    del self.cleaned_data['fecha_envio']
-    del self.cleaned_data['fecha_resp']
-    return self.cleaned_data
-    
+class TipoTutelasAdmin(admin.ModelAdmin):
+  list_display   = ('nombre',)
+  ordering = ('nombre',)
+  search_fields  = ('nombre',)
 
 class TutelaAdmin(admin.ModelAdmin):
   change_list_template = "admin/change_list_filter_sidebar.html"
@@ -56,11 +44,32 @@ class TutelaAdmin(admin.ModelAdmin):
     return obj.accionante.cedula
   accionante_cedula.short_description = "Accionante cedula"
 
-class ProcesoDiciplinarioInline(admin.StackedInline):
-  """Formulario de oficios"""
-  model   = ProcesoDisciplinario
-  fk_name = 'oficio'
-  extra   = 1
+#PETICIONES
+
+class TipoPeticionAdmin(admin.ModelAdmin):
+  list_display   = ('nombre',)
+  ordering = ('nombre',)
+  search_fields  = ('nombre',)
+
+
+class PeticionAdmin(admin.ModelAdmin):
+  change_list_template = "admin/change_list_filter_sidebar.html"
+  change_list_filter_template = "admin/filter_listing.html"
+  raw_id_fields = ('accionante',)
+  list_filter   = ['estado','tipo']
+  list_display  = ('accionante_cedula','accionante_nombre','accionado','fecha_envio','estado','fecha_resp','tipo')
+  search_fields = ('accionante__cedula','accionante__nombre')
+  autocomplete_lookup_fields = {
+        'fk': ['accionante'],
+  }
+  def accionante_nombre(self,obj):
+     return obj.accionante.nombre
+  accionante_nombre.short_description = "Accionante"
+  def accionante_cedula(self, obj):
+     return obj.accionante.cedula
+  accionante_cedula.short_description = "Accionante cedula"
+
+#DESACATOS
 
 class DesacatoAdmin(admin.ModelAdmin):
   change_list_template = "admin/change_list_filter_sidebar.html"
@@ -83,6 +92,14 @@ class DesacatoAdmin(admin.ModelAdmin):
      return obj.accionante.cedula
   accionante_cedula.short_description = "Accionante cedula"
 
+#OFICIOS
+
+class ProcesoDiciplinarioInline(admin.StackedInline):
+  """Formulario de oficios"""
+  model   = ProcesoDisciplinario
+  fk_name = 'oficio'
+  extra   = 1
+
 class OficioAdmin(admin.ModelAdmin):
  inlines = [ProcesoDiciplinarioInline]
  list_display=('num_fallo','accionante_cedula','accionante_nombre','accionado','asunto','fecha_envio','fecha_resp','estado','notificacion')
@@ -103,6 +120,8 @@ class NotificacionInline(admin.StackedInline):
   fk_name = 'proc_discip'
   extra   = 1
 
+#PROCESOS DICIPLINARIOS
+
 class ProcesoDiciplinarioAdmin(admin.ModelAdmin):
  inlines = [NotificacionInline]
  list_display   = ('ent_notific','estado','fecha_envio','fecha_resp','investigacion')
@@ -112,6 +131,8 @@ class AsuntoInline(admin.TabularInline):
   """Formulario de Victimas"""
   model = Asunto
   extra = 1
+
+#VICTIMAS
 
 class VictimaAdmin(admin.ModelAdmin):
  change_list_template = "admin/change_list_filter_sidebar.html"
@@ -127,7 +148,6 @@ class VictimaAdmin(admin.ModelAdmin):
  list_display   = ('accionante_cedula','accionante_nombre','estado')
  list_filter = ['estado']
  search_fields  = ['accionante__cedula','accionante__nombre']
-
  def accionante_nombre(self,obj):
      return obj.accionante.nombre
  accionante_nombre.short_description = "Accionante"
@@ -135,32 +155,7 @@ class VictimaAdmin(admin.ModelAdmin):
      return obj.accionante.cedula
  accionante_cedula.short_description = "Accionante cedula"
 
-class TipoTutelasAdmin(admin.ModelAdmin):
-  list_display   = ('nombre',)
-  ordering = ('nombre',)
-  search_fields  = ('nombre',)
 
-class TipoPeticionAdmin(admin.ModelAdmin):
-  list_display   = ('nombre',)
-  ordering = ('nombre',)
-  search_fields  = ('nombre',)
-
-class PeticionAdmin(admin.ModelAdmin):
-  change_list_template = "admin/change_list_filter_sidebar.html"
-  change_list_filter_template = "admin/filter_listing.html"
-  raw_id_fields = ('accionante',)
-  list_filter   = ['estado','tipo']
-  list_display  = ('accionante_cedula','accionante_nombre','accionado','fecha_envio','estado','fecha_resp','tipo')
-  search_fields = ('accionante__cedula','accionante__nombre')
-  autocomplete_lookup_fields = {
-        'fk': ['accionante'],
-  }
-  def accionante_nombre(self,obj):
-     return obj.accionante.nombre
-  accionante_nombre.short_description = "Accionante"
-  def accionante_cedula(self, obj):
-     return obj.accionante.cedula
-  accionante_cedula.short_description = "Accionante cedula"
 
 
 admin.site.register(Ciudadano,CiudadanoAdmin)

@@ -7,6 +7,9 @@ from django.db import models
 #fecha_respuesta = fecha_envio + termino_contestacion "solo dias habiles"
 
 
+def validate_day_today_or_later(value):
+  pass
+
 class TerminoDeContestacion(models.Model):
  """esta tabla brinda para cada documento el numero de dias que se tendra para el calculo de la fecha de respuesta"""
  nombre = models.CharField( max_length = 3 ,choices = TERMINO_DE_COTESTACION)
@@ -46,6 +49,7 @@ class Documento(models.Model):
  #...
  def __unicode__(self):
   return "accionante: "+self.accionante.nombre+" accionado: "+self.accionado+" envio: "+str(self.fecha_envio)+" resp: "+str(self.fecha_resp)+" estado: "+self.estado
+ 
 
 class TipoTutela(models.Model):
  nombre = models.CharField(max_length = 20)
