@@ -1,5 +1,8 @@
 from django.contrib import admin
+from django import forms 
 from docs.models import *
+
+import datetime
 
 
 class CiudadanoAdmin(admin.ModelAdmin):
@@ -13,11 +16,27 @@ class CiudadanoAdmin(admin.ModelAdmin):
   ordering = ("nombre","apellido1","apellido2","cedula")
 
 
-
+class TutelaForm(forms.ModelForm):
+  # fecha_envio = forms.DateField(initial=datetime.date.today)
+  class Meta:
+    model = Tutela
+  # Methods
+  def clean(self):
+    fecha_envio = self.cleaned_data['fecha_envio']
+    fecha_resp = self.cleaned_data['fecha_resp']
+    if fecha_envio < datetime.date.today():
+      self._errors['fecha_envio'] = self.error_class(["El dia no puede ser antes de la fecha actual."]) 
+    if fecha_resp < fecha_envio:
+      self._errors['fecha_resp'] = self.error_class(["La fehca de respuesta debe ser despues del dia "])
+    del self.cleaned_data['fecha_envio']
+    del self.cleaned_data['fecha_resp']
+    return self.cleaned_data
+    
 
 class TutelaAdmin(admin.ModelAdmin):
   change_list_template = "admin/change_list_filter_sidebar.html"
   change_list_filter_template = "admin/filter_listing.html"
+  form = TutelaForm
   fieldset = [
      ("Tutela" , {'fields': ['accionante','accionado','tipo','fecha_envio','fecha_resp','estado','adjunto']})
    ]

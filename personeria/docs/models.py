@@ -42,7 +42,7 @@ class Documento(models.Model):
  accionado   = models.CharField( max_length = 60, default = "" )
  estado      = models.CharField( max_length = 3, choices = ESTADO, default = "PRO" )
  fecha_envio = models.DateField( blank = False, default = timezone.now() )
- fecha_resp  = models.DateField( editable = True )
+ fecha_resp  = models.DateField( editable = True , default = timezone.now() + datetime.timedelta(days=16))
  #...
  def __unicode__(self):
   return "accionante: "+self.accionante.nombre+" accionado: "+self.accionado+" envio: "+str(self.fecha_envio)+" resp: "+str(self.fecha_resp)+" estado: "+self.estado
