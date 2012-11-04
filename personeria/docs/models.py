@@ -7,8 +7,6 @@ from django.db import models
 #fecha_respuesta = fecha_envio + termino_contestacion "solo dias habiles"
 
 
-def validate_day_today_or_later(value):
-  pass
 
 class TerminoDeContestacion(models.Model):
  """esta tabla brinda para cada documento el numero de dias que se tendra para el calculo de la fecha de respuesta"""
@@ -50,6 +48,7 @@ class Documento(models.Model):
  def __unicode__(self):
   return "accionante: "+self.accionante.nombre+" accionado: "+self.accionado+" envio: "+str(self.fecha_envio)+" resp: "+str(self.fecha_resp)+" estado: "+self.estado
  
+#TUTELAS
 
 class TipoTutela(models.Model):
  nombre = models.CharField(max_length = 20)
@@ -65,6 +64,8 @@ class Tutela(Documento):
   return padre+" tipo: "+self.tipo.nombre
 
 
+#PETICIOES
+
 class TipoPeticion(models.Model):
  nombre = models.CharField(max_length = 20)
  def __unicode__(self):
@@ -77,12 +78,15 @@ class Peticion(Documento):
   padre= super(Peticion,self).__unicode__()
   return padre+" tipo: "+self.tipo.__unicode__()
 
+#DESACATOS
+
 class Desacato(Tutela):
  radicado = models.CharField(max_length = 30)
  def __unicode__(self):
   padre = super(Desacato,self).__unicode__()
   return padre+" radicado: "+self.radicado
 
+#OFICIOS
 
 class Oficio(Documento):
  adjunto      = models.FileField(upload_to = 'img/oficios')
@@ -94,12 +98,14 @@ class Oficio(Documento):
   return (padre+" \n Asunto: "+self.asunto+
          "\n notificacion: "+self.notificacion+" proceso diciplinario: ")
 
+#PROCESOS DICIPLINARIOS
+
 class ProcesoDisciplinario(models.Model):
  adjunto       = models.FileField(upload_to = 'img/procesos_diciplinarios')
  ent_notific   = models.TextField(max_length = 200)
  estado        = models.CharField( max_length = 3, choices = ESTADO, default = "PRO" )
  fecha_envio   = models.DateField( blank = False, default = timezone.now() )
- fecha_resp    = models.DateField( editable = True )
+ fecha_resp    = models.DateField( editable = True, default = timezone.now() + datetime.timedelta(days=16) )
  investigacion = models.CharField( max_length = 2, choices = INVESTIGACIONES )
  oficio        = models.ForeignKey(Oficio)
  def __unicode__(self):
@@ -111,6 +117,8 @@ class Notificacion(models.Model):
   proc_discip = models.ForeignKey(ProcesoDisciplinario)
   def __unicode__(self):
     return "Nombre: "+self.nombre+" Proceso Disciplinario: "+self.proc_discip.__unicode__()
+
+#VICTIMAS
 
 
 class Victima(models.Model):

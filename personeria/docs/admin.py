@@ -43,6 +43,8 @@ class TutelaAdmin(admin.ModelAdmin):
   def accionante_cedula(self, obj):
     return obj.accionante.cedula
   accionante_cedula.short_description = "Accionante cedula"
+  class Media:
+    js = ["/media/js/validators.js",]
 
 #PETICIONES
 
@@ -55,6 +57,7 @@ class TipoPeticionAdmin(admin.ModelAdmin):
 class PeticionAdmin(admin.ModelAdmin):
   change_list_template = "admin/change_list_filter_sidebar.html"
   change_list_filter_template = "admin/filter_listing.html"
+  form = PeticionForm
   raw_id_fields = ('accionante',)
   list_filter   = ['estado','tipo']
   list_display  = ('accionante_cedula','accionante_nombre','accionado','fecha_envio','estado','fecha_resp','tipo')
@@ -74,6 +77,7 @@ class PeticionAdmin(admin.ModelAdmin):
 class DesacatoAdmin(admin.ModelAdmin):
   change_list_template = "admin/change_list_filter_sidebar.html"
   change_list_filter_template = "admin/filter_listing.html"
+  form = DesacatoForm
   fieldsets = [
       ("Desacato" , {'fields': ['accionante','accionado','tipo','fecha_envio','fecha_resp','estado','adjunto']})#con los parentesis se ponene los campos en la misma fila
   ]
@@ -104,6 +108,7 @@ class OficioAdmin(admin.ModelAdmin):
  inlines = [ProcesoDiciplinarioInline]
  list_display=('num_fallo','accionante_cedula','accionante_nombre','accionado','asunto','fecha_envio','fecha_resp','estado','notificacion')
  raw_id_fields = ('accionante',)
+ form = OficioForm
  autocomplete_lookup_fields = {
         'fk': ['accionante'],
   }
@@ -114,25 +119,27 @@ class OficioAdmin(admin.ModelAdmin):
  def accionante_cedula(self, obj):
      return obj.accionante.cedula
  accionante_cedula.short_description = "Accionante cedula"
+
+#PROCESOS DICIPLINARIOS
+
 class NotificacionInline(admin.StackedInline):
   """Formulario de procesos Disciplinario"""
   model   = Notificacion
   fk_name = 'proc_discip'
   extra   = 1
 
-#PROCESOS DICIPLINARIOS
-
 class ProcesoDiciplinarioAdmin(admin.ModelAdmin):
  inlines = [NotificacionInline]
  list_display   = ('ent_notific','estado','fecha_envio','fecha_resp','investigacion')
- #
+ form = ProcesoDiciplinarioForm
+
+#VICTIMAS
 
 class AsuntoInline(admin.TabularInline):
   """Formulario de Victimas"""
   model = Asunto
   extra = 1
 
-#VICTIMAS
 
 class VictimaAdmin(admin.ModelAdmin):
  change_list_template = "admin/change_list_filter_sidebar.html"
