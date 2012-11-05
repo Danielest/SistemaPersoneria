@@ -70,6 +70,7 @@ def tutela_filename(instance, filename):
 class Tutela(Documento):
  """corregida"""
  adjunto = models.FileField(upload_to=tutela_filename , blank=True , storage = OverwriteStorage(), help_text="seleccione la Tutela a gaurdar")
+ # adjunto = CustomCheckFileField(upload_to="img/tutela", custom_check=_custom_media_file_unique,error_message="File Already Exists",storage=OverwriteStorage())
  tipo    = models.ForeignKey(TipoTutela , help_text="si no encuentra el tipo de tutela haga click en + para agregar uno")
  def __unicode__(self):
   padre = super(Tutela,self).__unicode__()
@@ -91,7 +92,7 @@ def peticiones_filename(instance, filename):
   return os.path.join(path, format)
 
 class Peticion(Documento):
- adjunto = models.FileField(peticiones_filename=peticiones_filename , blank=True , storage = OverwriteStorage(), help_text="seleccione la Tutela a gaurdar")
+ adjunto = models.FileField(upload_to=tutela_filename , blank=True , storage = OverwriteStorage(), help_text="seleccione la Tutela a gaurdar")
  tipo = models.ForeignKey(TipoPeticion)
  def __unicode__(self):
   padre= super(Peticion,self).__unicode__()
