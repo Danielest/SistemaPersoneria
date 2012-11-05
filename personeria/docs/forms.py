@@ -1,7 +1,7 @@
 from django import forms 
 from docs.models import Tutela
 import datetime
-
+from django.utils import timezone
 
 #TUTELAS
 class TutelaForm(forms.ModelForm):
@@ -19,6 +19,8 @@ class TutelaForm(forms.ModelForm):
     del self.cleaned_data['fecha_envio']
     del self.cleaned_data['fecha_resp']
     return self.cleaned_data
+  # class Media:
+  #   js = ["/media/js/validators.js",]
 
 #PETICIONES
 

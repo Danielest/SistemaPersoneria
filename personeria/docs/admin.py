@@ -43,8 +43,7 @@ class TutelaAdmin(admin.ModelAdmin):
   def accionante_cedula(self, obj):
     return obj.accionante.cedula
   accionante_cedula.short_description = "Accionante cedula"
-  class Media:
-    js = ["/media/js/validators.js",]
+
 
 #PETICIONES
 

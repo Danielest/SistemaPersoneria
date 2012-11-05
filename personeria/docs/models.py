@@ -1,12 +1,17 @@
 import datetime
-from globals import *
+
+from globals import * 
 from django.utils import timezone
 from django.db import models
-
+from django.forms.extras.widgets import SelectDateWidget
+from storage import *
 
 #fecha_respuesta = fecha_envio + termino_contestacion "solo dias habiles"
 
 
+
+
+#database
 
 class TerminoDeContestacion(models.Model):
  """esta tabla brinda para cada documento el numero de dias que se tendra para el calculo de la fecha de respuesta"""
@@ -40,9 +45,9 @@ class Ciudadano(models.Model):
 
 class Documento(models.Model):
  accionante  = models.ForeignKey(Ciudadano)
- accionado   = models.CharField( max_length = 60, default = "" )
+ accionado   = models.CharField( max_length = 60, default = "" ,help_text="Nombre de la persona con mayuscula Inicial ejemplo * (Juan Carlos, David, Alejandra...)" )
  estado      = models.CharField( max_length = 3, choices = ESTADO, default = "PRO" )
- fecha_envio = models.DateField( blank = False, default = timezone.now() )
+ fecha_envio = models.DateField( blank = False, default = timezone.now() ) 
  fecha_resp  = models.DateField( editable = True , default = timezone.now() + datetime.timedelta(days=16))
  #...
  def __unicode__(self):
@@ -55,13 +60,21 @@ class TipoTutela(models.Model):
  def __unicode__(self):
   return self.nombre
 
+
+def tutela_filename(instance, filename):
+  ext = "."+filename.split(".")[1]
+  path = "img/tutela/"
+  format =  instance.accionante.cedula + "_" +str(instance.id) + ext
+  return os.path.join(path, format)
+
 class Tutela(Documento):
  """corregida"""
- adjunto = models.FileField(upload_to = 'img/tutelas')
- tipo    = models.ForeignKey(TipoTutela)
+ adjunto = models.FileField(upload_to=tutela_filename , blank=True , storage = OverwriteStorage(), help_text="seleccione la Tutela a gaurdar")
+ tipo    = models.ForeignKey(TipoTutela , help_text="si no encuentra el tipo de tutela haga click en + para agregar uno")
  def __unicode__(self):
   padre = super(Tutela,self).__unicode__()
   return padre+" tipo: "+self.tipo.nombre
+
 
 
 #PETICIOES
@@ -71,8 +84,14 @@ class TipoPeticion(models.Model):
  def __unicode__(self):
   return self.nombre
 
+def peticiones_filename(instance, filename):
+  ext = "."+filename.split(".")[1]
+  path = "img/peticiones/"
+  format =  instance.accionante.cedula + "_" +str(instance.id) + ext
+  return os.path.join(path, format)
+
 class Peticion(Documento):
- adjunto = models.FileField(upload_to = 'img/peticiones')
+ adjunto = models.FileField(peticiones_filename=peticiones_filename , blank=True , storage = OverwriteStorage(), help_text="seleccione la Tutela a gaurdar")
  tipo = models.ForeignKey(TipoPeticion)
  def __unicode__(self):
   padre= super(Peticion,self).__unicode__()

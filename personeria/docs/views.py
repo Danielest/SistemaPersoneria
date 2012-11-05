@@ -39,6 +39,8 @@ def singleTutela(request, tut_id):
 from reportlab.pdfgen import canvas
 from django.http import HttpResponse
 
+
+# pip instal reportLab https://docs.djangoproject.com/en/dev/howto/outputting-pdf/
 def pruebapdf(request):
     # Create the HttpResponse object with the appropriate PDF headers.
     response = HttpResponse(mimetype='application/pdf')
