@@ -14,13 +14,42 @@ from grappelli.dashboard.utils import get_admin_site_name
 
 
 class CustomIndexDashboard(Dashboard):
-    """
-    Custom index dashboard for www.
-    """
-    
-    def init_with_context(self, context):
-        site_name = get_admin_site_name(context)
-        
+  """
+  Custom index dashboard for www.
+  """
+  title = _('Dashboard')
+  template = 'grappelli/dashboard/dashboard.html'
+  columns = 2
+  children = None
+  def __init__(self, **kwargs):
+      for key in kwargs:
+          if hasattr(self.__class__, key):
+              setattr(self, key, kwargs[key])
+      self.children = self.children or []
+
+  def init_with_context(self, context):
+    site_name = get_admin_site_name(context)
+    title = _('Dashboard')
+    self.children.append(modules.AppList(
+        title=('Gestion y manejo de Documentos Personeria'),
+        collapsible=False,
+        column=1,
+        css_classes=('collapse closed',),
+        exclude=('django.contrib.*',),
+    ))
+    # append a recent actions module
+    self.children.append(modules.RecentActions(
+        _('Recent Actions'),
+        limit=5,
+        collapsible=False,
+        column=3,
+    ))
+  class Media:
+     css = ('css/mydashboard.css',)
+     js  = ('js/validators.js',) 
+
+
+
         # # append a group for "Administration" & "Applications"
         # self.children.append(modules.Group(
         #     _('Group: Administration & Applications'),
@@ -43,22 +72,6 @@ class CustomIndexDashboard(Dashboard):
         # ))
         
         # append an app list module for "Applications"
-        self.children.append(modules.AppList(
-            title=('Gestion y manejo de Documentos'),
-            collapsible=False,
-            column=1,
-            css_classes=('collapse closed',),
-            exclude=('django.contrib.*',),
-        ))
-
-        # append a recent actions module
-        self.children.append(modules.RecentActions(
-            _('Recent Actions'),
-            limit=5,
-            collapsible=False,
-            column=3,
-        ))
-        
         # # append an app list module for "Administration"
         # self.children.append(modules.ModelList(
         #     _('ModelList: Administration'),

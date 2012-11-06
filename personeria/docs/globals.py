@@ -12,10 +12,10 @@ ESTADO = (
 )
 
 INVESTIGACIONES = (
- ('IP','investigacion preliminar'),
- ('ID','investigacion disciplinaria'),
- ('IP','investigacion de pruebas'),
- ('TC','translado de conclusion'),
+ ('IPRE','investigacion preliminar'),
+ ('IDIC','investigacion disciplinaria'),
+ ('IPRU','investigacion de pruebas'),
+ ('TCON','translado de conclusion'),
 )
 
 NOTIFICACIONES = (
@@ -33,6 +33,8 @@ TERMINO_DE_COTESTACION = (
  ('OFI','Oficios'),
 )
 
+
+DOCS_FILES = "documentos";
 
 
 

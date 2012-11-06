@@ -40,7 +40,7 @@ class Ciudadano(models.Model):
     return ("id__iexact", "nombre__icontains","cedula__icontains")
   #para que se pueda ordenar en el modulo de administracion
   nombreCompleto.admin_order_field = 'nombre'
-  nombreCompleto.short_description = 'Nombre Completo'
+  nombreCompleto.short_description = 'Nombre'
 
 
 class Documento(models.Model):
@@ -51,7 +51,7 @@ class Documento(models.Model):
  fecha_resp  = models.DateField( editable = True , default = timezone.now() + datetime.timedelta(days=16))
  #...
  def __unicode__(self):
-  return "accionante: "+self.accionante.nombre+" accionado: "+self.accionado+" envio: "+str(self.fecha_envio)+" resp: "+str(self.fecha_resp)+" estado: "+self.estado
+  return str(self.id) +" accionada por "+self.accionante.nombre
  
 #TUTELAS
 
@@ -63,20 +63,23 @@ class TipoTutela(models.Model):
 
 def tutela_filename(instance, filename):
   ext = "."+filename.split(".")[1]
-  path = "img/tutela/"
+  path = DOCS_FILES+"/tutelas/"
   format =  instance.accionante.cedula + "_" +str(instance.id) + ext
   return os.path.join(path, format)
 
 class Tutela(Documento):
  """corregida"""
- adjunto = models.FileField(upload_to=tutela_filename , blank=True , storage = OverwriteStorage(), help_text="seleccione la Tutela a gaurdar")
- # adjunto = CustomCheckFileField(upload_to="img/tutela", custom_check=_custom_media_file_unique,error_message="File Already Exists",storage=OverwriteStorage())
+ adjunto = models.FileField(upload_to=tutela_filename , blank=True , storage = OverwriteStorage(), help_text="Adjunte archivo")
  tipo    = models.ForeignKey(TipoTutela , help_text="si no encuentra el tipo de tutela haga click en + para agregar uno")
  def __unicode__(self):
   padre = super(Tutela,self).__unicode__()
-  return padre+" tipo: "+self.tipo.nombre
-
-
+  return "  "+self.tipo.nombre +" con ID "+ padre
+ def tieneAdjunto(self):
+  if not self.adjunto:
+    return "No"
+  else:
+    return "Si"  
+ tieneAdjunto.short_description = 'Adjunto'
 
 #PETICIOES
 
@@ -87,73 +90,134 @@ class TipoPeticion(models.Model):
 
 def peticiones_filename(instance, filename):
   ext = "."+filename.split(".")[1]
-  path = "img/peticiones/"
+  path = DOCS_FILES+"/peticiones/"
   format =  instance.accionante.cedula + "_" +str(instance.id) + ext
   return os.path.join(path, format)
 
 class Peticion(Documento):
- adjunto = models.FileField(upload_to=tutela_filename , blank=True , storage = OverwriteStorage(), help_text="seleccione la Tutela a gaurdar")
+ adjunto = models.FileField(upload_to=peticiones_filename , blank=True , storage = OverwriteStorage(), help_text="seleccione la Tutela a gaurdar")
  tipo = models.ForeignKey(TipoPeticion)
  def __unicode__(self):
   padre= super(Peticion,self).__unicode__()
   return padre+" tipo: "+self.tipo.__unicode__()
+ def tieneAdjunto(self):
+  if not self.adjunto:
+    return "No"
+  else:
+    return "Si"  
+ tieneAdjunto.short_description = 'Adjunto'
 
 #DESACATOS
 
-class Desacato(Tutela):
+def desacato_filename(instance, filename):
+  ext = "."+filename.split(".")[1]
+  path = DOCS_FILES+"/desacatos/"
+  format =  instance.accionante.cedula + "_" +str(instance.id) + ext
+  return os.path.join(path, format)
+
+class Desacato(Documento):
+ adjunto = models.FileField(upload_to=desacato_filename , blank=True , storage = OverwriteStorage(), help_text="Archivo de desacato")
+ tipo    = models.ForeignKey(TipoTutela , help_text="si no encuentra el tipo de tutela haga click en + para agregar uno")
  radicado = models.CharField(max_length = 30)
  def __unicode__(self):
-  padre = super(Desacato,self).__unicode__()
-  return padre+" radicado: "+self.radicado
-
+  return " tipo: "+self.tipo.nombre
+ def tieneAdjunto(self):
+  if not self.adjunto:
+    return "No"
+  else:
+    return "Si"  
+ tieneAdjunto.short_description = 'Adjunto'
 #OFICIOS
 
+def oficio_filename(instance, filename):
+  ext = "."+filename.split(".")[1]
+  path = DOCS_FILES+"/oficios/"+str(instance.id)+"/"
+  format =  instance.accionante.cedula + "_" +str(instance.id) + ext
+  return os.path.join(path, format)
+
 class Oficio(Documento):
- adjunto      = models.FileField(upload_to = 'img/oficios')
+ adjunto      = models.FileField(upload_to=oficio_filename , blank=True , storage = OverwriteStorage(), help_text="Archivo de Oficio")
  asunto       = models.TextField(max_length = 200)
  notificacion = models.TextField(max_length = 200)
  num_fallo    = models.IntegerField()
+ @staticmethod
+ def autocomplete_search_fields():
+  return ("id__iexact", "num_fallo__icontains") 
  def __unicode__(self):
-  padre = super(Oficio,self).__unicode__()
-  return (padre+" \n Asunto: "+self.asunto+
-         "\n notificacion: "+self.notificacion+" proceso diciplinario: ")
+  return "accionado por "+ str(self.accionante.cedula) +" # fallo "+ str(self.num_fallo)
+ def tieneAdjunto(self):
+  if not self.adjunto:
+    return "No"
+  else:
+    return "Si"  
+ tieneAdjunto.short_description = 'Adjunto'
 
 #PROCESOS DICIPLINARIOS
 
+def proceso_filename(instance, filename):
+  ext = "."+filename.split(".")[1]
+  path = DOCS_FILES+"/oficios/"+str(instance.oficio.id)+"/procesos/"
+  format =  instance.get_investigacion_display() + "_" +str(instance.id) + ext
+  return os.path.join(path, format)
+
 class ProcesoDisciplinario(models.Model):
- adjunto       = models.FileField(upload_to = 'img/procesos_diciplinarios')
- ent_notific   = models.TextField(max_length = 200)
+ adjunto       = models.FileField(upload_to=proceso_filename , blank=True , storage = OverwriteStorage(), help_text="Seleccione el Archivo del Proceso Diciplinario")
+ ent_notific   = models.CharField(max_length = 50,default = "Personeria de manizales" ,verbose_name="Entidad Notificadora",help_text="en este campo se escribe el nombre de la entidad notificadora ")
  estado        = models.CharField( max_length = 3, choices = ESTADO, default = "PRO" )
  fecha_envio   = models.DateField( blank = False, default = timezone.now() )
  fecha_resp    = models.DateField( editable = True, default = timezone.now() + datetime.timedelta(days=16) )
- investigacion = models.CharField( max_length = 2, choices = INVESTIGACIONES )
+ investigacion = models.CharField( max_length = 4, choices = INVESTIGACIONES )
  oficio        = models.ForeignKey(Oficio)
  def __unicode__(self):
-  return " investigacion: "+self.investigacion
+  return self.get_investigacion_display()
+ def tieneAdjunto(self):
+  if not self.adjunto:
+    return "No"
+  else:
+    return "Si"  
+ def getOficio(self):
+   return self.oficio.id
+ tieneAdjunto.short_description = 'Adjunto' 
+ getOficio.short_description = 'Oficio ID' 
+ 
+
 
 class Notificacion(models.Model):
   nombre      = models.CharField( max_length = 2, choices = NOTIFICACIONES  )
-  descripcion = models.CharField( max_length = 400);
+  descripcion = models.TextField( max_length = 400);
   proc_discip = models.ForeignKey(ProcesoDisciplinario)
   def __unicode__(self):
-    return "Nombre: "+self.nombre+" Proceso Disciplinario: "+self.proc_discip.__unicode__()
-
+    return self.get_nombre_display()
 #VICTIMAS
 
 
 class Victima(models.Model):
-  accionante = models.ForeignKey(Ciudadano)
-  estado     = models.BooleanField(default = False)
+  accionante  = models.ForeignKey(Ciudadano)
+  estado      = models.BooleanField(default = False,help_text="verdadero: aprobado\n falso: pendiente",verbose_name="Aprobado")
+  fecha_envio = models.DateField( blank = False, default = timezone.now() ,verbose_name = "Fecha de registro") 
   def __unicode__(self):
     return "accionante: "+self.accionante.__unicode__()+" estado: "+str(self.estado)
 
+def asunto_filename(instance, filename):
+  ext = "."+filename.split(".")[1]
+  path = DOCS_FILES+"/victimas/"+instance.victima.accionante.cedula+"/asuntos"
+  format = str(instance.get_nombre_display()) + ext
+  return os.path.join(path, format)
+
 #veo rara la relacion victimas/asunto, o no la entiendo!, pero no la he modificado
 class Asunto(models.Model):
-  adjunto = models.FileField(upload_to = 'asuntos')
+  adjunto = models.FileField(upload_to=asunto_filename , blank=True , storage = OverwriteStorage(), help_text="Seleccione el Asunto para la Victima")
   nombre  = models.CharField( max_length = 2, choices=ASUNTOS)
   victima = models.ForeignKey(Victima)
+  fecha_envio = models.DateField( blank = False, default = timezone.now() ) 
   def __unicode__(self):
     return "Nombre:  "+self.nombre+" Victima: "+self.victima.__unicode__()
+  def tieneAdjunto(self):
+   if not self.adjunto:
+     return "No"
+   else:
+     return "Si"  
+  tieneAdjunto.short_description = 'Adjunto'
 
 # class Funcionario(models.Model):
 #   apellido1 = models.CharField( max_length = 45, default= "" )

@@ -1,5 +1,5 @@
 from django import forms 
-from docs.models import Tutela
+from docs.models import Tutela,Peticion,Desacato,Oficio,ProcesoDisciplinario
 import datetime
 from django.utils import timezone
 
@@ -26,7 +26,7 @@ class TutelaForm(forms.ModelForm):
 
 class PeticionForm(forms.ModelForm):
   class Meta:
-    model = Tutela
+    model = Peticion
   # Methods
   # la forma de validar se encuentra en https://docs.djangoproject.com/en/dev/ref/forms/validation/
   def clean(self):
@@ -44,7 +44,7 @@ class PeticionForm(forms.ModelForm):
 
 class DesacatoForm(forms.ModelForm):
   class Meta:
-    model = Tutela
+    model = Desacato
   # Methods
   # la forma de validar se encuentra en https://docs.djangoproject.com/en/dev/ref/forms/validation/
   def clean(self):
@@ -62,7 +62,7 @@ class DesacatoForm(forms.ModelForm):
 
 class OficioForm(forms.ModelForm):
   class Meta:
-    model = Tutela
+    model = Oficio
   # Methods
   # la forma de validar se encuentra en https://docs.djangoproject.com/en/dev/ref/forms/validation/
   def clean(self):
@@ -80,7 +80,7 @@ class OficioForm(forms.ModelForm):
 
 class ProcesoDiciplinarioForm(forms.ModelForm):
   class Meta:
-    model = Tutela
+    model = ProcesoDisciplinario
   # Methods
   # la forma de validar se encuentra en https://docs.djangoproject.com/en/dev/ref/forms/validation/
   def clean(self):
